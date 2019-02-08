@@ -1,6 +1,6 @@
 spring:
   application:
-    name: vdalen_config_service
+    name: vdalen_configervice
   cloud:
     config:
       server:

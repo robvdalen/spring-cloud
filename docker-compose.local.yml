@@ -1,31 +1,31 @@
 version: '3.3'
 
 services:
-  vdalen-config-service:
+  vdalen-configservice:
     build:
       context: ./config-service/target/docker-files
       dockerfile: Dockerfile
-    container_name: vdalen-config-service
+    container_name: vdalen-configservice
     restart: unless-stopped
     ports:
       - 8888:8888
     volumes:
       - ./config-service/config:/data
     environment:
-      spring.profiles.active: native
+      SPRING_PROFILES_ACTIVE: "native"
 
-  vdalen-discovery-service:
+  vdalen-discoveryservice:
     build:
       context: ./discovery-service/target/docker-files
       dockerfile: Dockerfile
-    container_name: vdalen-discoveryservice-service
+    container_name: vdalen-discoveryservice
     restart: unless-stopped
     ports:
       - 8761:8761
     links:
-      - vdalen-config-service
+      - vdalen-configservice
     depends_on:
-      - vdalen-config-service
+      - vdalen-configservice
     environment:
-      spring.profiles.active: native
-      spring.cloud.config.uri: http://vdalen-config-service:8888
+      SPRING_PROFILES_ACTIVE: "native"
+      CONFIGSERVICE_INSTANCE_HOST: "vdalen-configservice"

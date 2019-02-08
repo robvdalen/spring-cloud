@@ -1,15 +1,29 @@
 spring:
   application:
-    name: vdalen_discovery_service
+    name: vdalen_discoveryservice
   cloud:
     config:
-      username: ${spring.security.user.name}
-      password: ${spring.security.user.password}
+      uri: http://${configservice.instance.host}:${configservice.instance.port}/
+      username: ${configservice.instance.username}
+      password: ${configservice.instance.password}
       failFast: true
       # options see org.springframework.cloud.config.client.RetryProperties
       retry:
         # Maximum number of attempts.
         maxAttempts: 30
+
+eureka:
+  name: Discovery Service
+  datacenter: Vdalen
+  client:
+    region: eu-central-1
+    registerWithEureka: false
+    fetchRegistry: false
+    serviceUrl:
+      defaultZone: http://${spring.security.user.name}:${spring.security.user.password}@${server.host}:${server.port}/eureka/
+
+server:
+  port: 8761
 
 info:
   component: Vdalen Discovery Service
@@ -35,6 +49,10 @@ spring:
     user:
       name: admin
       password: admin
-  cloud:
-    config:
-      uri: http://localhost:8888
+
+configservice:
+  instance:
+    host: localhost
+    port: 8888
+    username: admin
+    password: admin
