@@ -1,0 +1,40 @@
+spring:
+  application:
+    name: vdalen_discovery_service
+  cloud:
+    config:
+      username: ${spring.security.user.name}
+      password: ${spring.security.user.password}
+      failFast: true
+      # options see org.springframework.cloud.config.client.RetryProperties
+      retry:
+        # Maximum number of attempts.
+        maxAttempts: 30
+
+info:
+  component: Vdalen Discovery Service
+  version: ${project.version}
+
+logging:
+  level:
+    ROOT: ERROR
+
+    # Get info regarding connection to the config server and retries if required
+    org.springframework.cloud.config.client.ConfigServicePropertySourceLocator: INFO
+    org.springframework.cloud.config.client.ConfigServiceBootstrapConfiguration: INFO
+
+    # Set INFO to see the allocated port
+    org.springframework.boot.web.embedded.tomcat.TomcatWebServer: INFO
+    org.springframework.boot.web.embedded.undertow.UndertowWebServer: INFO
+
+---
+# for local use
+spring:
+  profiles: native
+  security:
+    user:
+      name: admin
+      password: admin
+  cloud:
+    config:
+      uri: http://localhost:8888

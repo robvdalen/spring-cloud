@@ -1,0 +1,91 @@
+eureka:
+  # Name of the application to be identified by other services (in this case, it is the eureka service itself)
+  name: PDOK Eureka
+  datacenter: PDOK
+
+  instance:
+    hostname: ${server.hostname}
+    preferIpAddress: false
+
+  server:
+    # renewalPercentThreshold: 0.49
+    # renewalThresholdUpdateIntervalMs
+
+    # Set this only for this sample service without which starting the instance will by default wait for the default of 5 mins
+    waitTimeInMsWhenSyncEmpty: 0
+
+    # for the example, set this to zero as we will not have peers to sync up with.
+    # Do not set in a real environment with multi-node eureka clusters.
+    numberRegistrySyncRetries: 0
+
+    response-cache-update-interval-ms: 1000
+  client:
+    registerWithEureka: false
+    fetchRegistry: false
+    serviceUrl:
+      defaultZone: http://${pdok.security.user.name}:${pdok.security.user.password}@${server.hostname}:${server.port}/eureka/
+
+security:
+  user:
+    name: ${pdok.security.user.name}
+    password: ${pdok.security.user.password}
+
+logging:
+  level:
+    ROOT: WARN
+
+    # Get info regarding connection to the cofig server and retries if required
+    org.springframework.cloud.config.client.ConfigServicePropertySourceLocator: INFO
+    org.springframework.retry.support.RetryTemplate: DEBUG
+
+    # Set INFO to see the allocated port
+    org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainer: INFO
+    org.springframework.boot.context.embedded.undertow.UndertowEmbeddedServletContainer: INFO
+
+---
+# For deployment local
+spring:
+  profiles: native # Deze naam niet aanpassen, anders werkt het niet meer. Spring hanteert namelijk 'native' voor lokaal
+
+server:
+  hostname: localhost
+  port: 8761
+
+eureka:
+  environment: lokaal
+
+---
+# For deployment in Docker (PROD) containers
+spring:
+  profiles: prod
+
+eureka:
+  environment: prod
+
+server:
+  hostname: pdok-discoveryservice.cs.kadaster.nl
+  port: 8761
+
+---
+# For deployment in Docker (FTO) containers
+spring:
+  profiles: fto
+
+eureka:
+  environment: fto
+
+server:
+  hostname: pdok-discoveryservice.fto.kadaster.nl
+  port: 8761
+
+---
+# For deployment in Docker (INT) containers
+spring:
+  profiles: int
+
+eureka:
+  environment: int
+
+server:
+  hostname: pdok-discoveryservice.in.kadaster.nl
+  port: 8761

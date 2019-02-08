@@ -1,0 +1,51 @@
+spring:
+  application:
+    name: vdalen_config_service
+  cloud:
+    config:
+      server:
+        git:
+          uri: git@bitbucket.wolterskluwer.io/
+          # This is the name of the branch where the configuration is
+          defaultLabel: master
+          cloneOnStart: true
+          searchPaths: config
+
+info:
+  component: Vdalen Config Service
+  version: ${project.version}
+
+logging:
+  level:
+    ROOT: ERROR
+
+    # Get info regarding connection to the config server and retries if required
+    org.springframework.cloud.config.client.ConfigServicePropertySourceLocator: INFO
+    org.springframework.cloud.config.client.ConfigServiceBootstrapConfiguration: INFO
+
+    # Set INFO to see the allocated port
+    org.springframework.boot.web.embedded.tomcat.TomcatWebServer: INFO
+    org.springframework.boot.web.embedded.undertow.UndertowWebServer: INFO
+
+server:
+  port: 8888
+
+---
+# for local use
+spring:
+  profiles: native
+  security:
+    user:
+      name: admin
+      password: admin
+  cloud:
+    config:
+      server:
+        native:
+          search-locations: file:config
+
+logging:
+  level:
+    ROOT: ERROR
+
+    org.springframework.cloud.config.server.environment: DEBUG

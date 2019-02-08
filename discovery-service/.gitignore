@@ -1,0 +1,23 @@
+# Ignore Maven build directories
+target
+data/pipelines/**/*
+!/data/pipelines/README.md
+/crux-tester/TestReport.html
+
+# project config files:
+.idea
+*.project
+.project
+.checkstyle
+.settings
+.classpath
+*.iml
+
+### Maven template
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties

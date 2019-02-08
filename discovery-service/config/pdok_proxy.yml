@@ -1,0 +1,215 @@
+pdok:
+  omgeving:
+    local:
+      name: int
+      domein: .in.kadaster.nl
+      serviceHost: test.geodata.nationaalgeoregister.nl
+    in:
+      name: int
+      domein: .in.kadaster.nl
+      serviceHost: test.geodata.nationaalgeoregister.nl
+    fto:
+      name: fto
+      domein: .fto.kadaster.nl
+      serviceHost: acceptatie.geodata.nationaalgeoregister.nl
+    prod:
+      name: prod
+      domein: .cs.kadaster.nl
+      serviceHost: geodata.nationaalgeoregister.nl
+
+  # 10.91.9.167 => pdok-yoda.cs.kadaster.nl
+  yoda: 10.91.9.167
+
+  # Read JSON information from the Orchestration
+  host: http://${pdok.yoda}/cgi-bin/get_hosts.cgi?dienst=pdok&werkomgeving={{omgeving}}
+
+  # Read JSON information from PDOK/catalogus GIT repository
+  catalogus:
+    json: http://${pdok.yoda}/api/v3/repos/PDOK/catalogus/contents/datasets
+    raw: http://${pdok.yoda}/raw/PDOK/catalogus/master/datasets/%s/configuration.json
+
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    registerWithEureka: true
+    fetchRegistry: true
+    serviceUrl:
+      defaultZone: http://${pdok.security.user.name}:${pdok.security.user.password}@${pdok.discoveryservice.hostname}:${pdok.discoveryservice.port}/eureka/
+
+hystrix:
+  threadpool:
+    default:
+      # Maximum number of concurrent requests when using thread pools (Default: 10)
+      coreSize: 500
+      # Maximum LinkedBlockingQueue size - -1 for using SynchronousQueue (Default: -1)
+      maxQueueSize: -1
+      # Queue size rejection threshold (Default: 5)
+      queueSizeRejectionThreshold: 5
+  command:
+    default:
+      execution:
+        isolation:
+          # strategy: SEMAPHORE, no thread pool but timeout handling stops to work
+          strategy: THREAD
+
+zuul:
+  ribbonIsolationStrategy: THREAD
+  host:
+    maxTotalConnections: 2000
+    maxPerRouteConnections: 200
+    connect-timeout-millis: 10000
+    socket-timeout-millis: 60000
+  ignoredServices: '*'
+  ignoredPatterns: /restart,/refresh,/resume,/pause,/status/**,/workspace/**,/host/**,/*.stream,/metrics/**,/trace/**,/dump/**,/configprops/**,/env/**,/beans/**,/autoconfig/**,/info/**,/mappings/**,/health/**,/routes/**,/jolokia/**,/archaius/**,/eureka/**
+  routes:
+    tiles_brt:
+      stripPrefix: false
+      path: ^/(tiles/service/)?tms/1.0.0/brtachtergrondkaart(@EPSG:28992@png)?/(.*)?$
+      serviceId: tiles_brt
+    tiles_wms:
+      stripPrefix: false
+      path: ^/tiles/service/wms(.*)?$
+      serviceId: tiles_wms
+    tiles_tms:
+      stripPrefix: false
+      path: ^/(tiles/service/)?tms(.*)?$
+      serviceId: tiles_tms
+    tiles_wtms:
+      stripPrefix: false
+      path: ^/(tiles/service/)?wmts(.*)?$
+      serviceId: tiles_wtms
+    tiles_wmsc:
+      stripPrefix: false
+      path: ^/wmsc(.*)?$
+      serviceId: tiles_wmsc
+    bgtvulling:
+      stripPrefix: false
+      path: ^/ps/(ows|w[cfm]s)([/?].*)?$
+      serviceId: bgtvulling
+    aanlevering:
+      stripPrefix: false
+      path: ^/aanlevering/(.*)$
+      serviceId: aanlevering
+    atom:
+      stripPrefix: false
+      path: ^/atom/(.*)$
+      serviceId: atom
+    beveiligingstest:
+      stripPrefix: false
+      path: ^/beveiligingstest(.*)$
+      serviceId: beveiligingstest
+    harmonized:
+      stripPrefix: false
+      path: ^(?:/inspire)?/(ad|au|bu|cp)/(ows|w[cfm]s)([/?].*)?$
+      serviceId: harmonized
+
+tiles_brt:
+  ribbon:
+    listOfServers: http://csu657{{domein}}/tiles/service/tms/1.0.0/brtachtergrondkaart@EPSG:28992@png/$3,http://csu662{{domein}}/tiles/service/tms/1.0.0/brtachtergrondkaart@EPSG:28992@png/$3
+tiles_wms:
+  ribbon:
+    listOfServers: http://csu657{{domein}}/tiles/service/wms$1,http://csu662{{domein}}/tiles/service/wms$1
+tiles_tms:
+  ribbon:
+    listOfServers: http://csu657{{domein}}/tiles/service/tms$2,http://csu662{{domein}}/tiles/service/tms$2
+tiles_wtms:
+  ribbon:
+    listOfServers: http://csu657{{domein}}/tiles/service/wtms$2,http://csu662{{domein}}/tiles/service/wtms$2
+tiles_wmsc:
+  ribbon:
+    listOfServers: http://csu657{{domein}}/tiles/service/wms$1,http://csu662{{domein}}/tiles/service/wms$1
+bgtvulling:
+  ribbon:
+    listOfServers: http://pdok-gsnlvector2{{domein}}/geoserver/bgtvulling/$1$2
+aanlevering:
+  ribbon:
+    listOfServers: http://pdok-dmpublic{{domein}}/dmpublic/aanlevering/$1
+atom:
+  ribbon:
+    listOfServers: http://pdok-dmpublic{{domein}}/dmpublic/atom/$1
+beveiligingstest:
+  ribbon:
+    listOfServers: http://pdok-webpages{{domein}}/webpages/beveiligingstest$1
+harmonized:
+  ribbon:
+    listOfServers: http://pdok-gsinharmonized{{domein}}/geoserver/$1/$2$3
+
+logging:
+  level:
+    ROOT: WARN
+
+    # Get info regarding connection to the cofig server and retries if required
+    org.springframework.cloud.config.client.ConfigServicePropertySourceLocator: INFO
+    org.springframework.retry.support.RetryTemplate: DEBUG
+
+    # Set INFO to see the allocated port
+    org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainer: INFO
+    org.springframework.boot.context.embedded.undertow.UndertowEmbeddedServletContainer: INFO
+
+    nl.kadaster.pdok.cloud.proxy: ERROR
+
+---
+# For deployment local
+spring:
+  profiles: native # Deze naam niet aanpassen, anders werkt het niet meer. Spring hanteert namelijk 'native' voor lokaal
+
+pdok:
+  discovery:
+    hostname: localhost
+    port: 8761
+
+server:
+  hostname: localhost
+  port: 80
+
+logging:
+  level:
+    nl.kadaster.pdok.cloud.proxy.config: DEBUG
+    nl.kadaster.pdok.cloud.proxy.helper: DEBUG
+    nl.kadaster.pdok.cloud.proxy.zuul.filters: ERROR
+    nl.kadaster.pdok.cloud.proxy.zuul.filters.pre: DEBUG
+    nl.kadaster.pdok.cloud.proxy.zuul.filters.route: DEBUG
+    nl.kadaster.pdok.cloud.proxy.zuul.filters.post: DEBUG
+
+---
+# For deployment in Docker (PROD) containers
+spring:
+  profiles: prod
+
+pdok:
+  discovery:
+    hostname: pdok-discoveryservice.cs.kadaster.nl
+    port: 8761
+
+server:
+  hostname: pdok-prod.cs.kadaster.nl
+  port: 80
+
+---
+# For deployment in Docker (FTO) containers
+spring:
+  profiles: fto
+
+pdok:
+  discovery:
+    hostname: pdok-discoveryservice.fto.kadaster.nl
+    port: 8761
+
+server:
+  hostname: pdok-prod.fto.kadaster.nl
+  port: 80
+
+---
+# For deployment in Docker (INT) containers
+spring:
+  profiles: int
+
+pdok:
+  discovery:
+    hostname: pdok-discoveryservice.in.kadaster.nl
+    port: 8761
+
+server:
+  hostname: pdok-prod.in.kadaster.nl
+  port: 80
