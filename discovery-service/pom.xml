@@ -12,7 +12,7 @@
 
 	<artifactId>discovery-service</artifactId>
 	<packaging>jar</packaging>
-	<name>Vdalen - Discovery service</name>
+	<name>Docker infrastructure - Discovery service</name>
 
 	<properties>
 		<start-class>nl.vdalen.spring.cloud.discoveryservice.DiscoveryService</start-class>

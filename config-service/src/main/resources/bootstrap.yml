@@ -1,18 +1,18 @@
 spring:
   application:
-    name: vdalen_configervice
+    name: configervice
   cloud:
     config:
       server:
         git:
-          uri: git@bitbucket.wolterskluwer.io/
+          uri: https://github.com/robvdalen/spring-cloud
           # This is the name of the branch where the configuration is
           defaultLabel: master
           cloneOnStart: true
-          searchPaths: config
+          searchPaths: config-service/config
 
 info:
-  component: Vdalen Config Service
+  component: Config Service
   version: ${project.version}
 
 logging:

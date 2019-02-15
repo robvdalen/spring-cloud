@@ -1,11 +1,11 @@
 version: '3.3'
 
 services:
-  vdalen-configservice:
+  configservice:
     build:
       context: ./config-service/target/docker-files
       dockerfile: Dockerfile
-    container_name: vdalen-configservice
+    container_name: configservice
     restart: unless-stopped
     ports:
       - 8888:8888
@@ -14,18 +14,18 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: "native"
 
-  vdalen-discoveryservice:
+  discoveryservice:
     build:
       context: ./discovery-service/target/docker-files
       dockerfile: Dockerfile
-    container_name: vdalen-discoveryservice
+    container_name: discoveryservice
     restart: unless-stopped
     ports:
       - 8761:8761
     links:
-      - vdalen-configservice
+      - configservice
     depends_on:
-      - vdalen-configservice
+      - configservice
     environment:
       SPRING_PROFILES_ACTIVE: "native"
-      CONFIGSERVICE_INSTANCE_HOST: "vdalen-configservice"
+      CONFIGSERVICE_INSTANCE_HOST: "configservice"

@@ -12,7 +12,7 @@
 
     <artifactId>config-service</artifactId>
     <packaging>jar</packaging>
-    <name>Vdalen - Config service</name>
+    <name>Docker infrastructure - Config service</name>
 
     <properties>
         <start-class>nl.vdalen.spring.cloud.configservice.ConfigService</start-class>

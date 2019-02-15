@@ -8,7 +8,7 @@
     <artifactId>infrastructure-parent</artifactId>
     <version>1.0.0-SNAPSHOT</version>
 
-    <name>Vdalen Docker infrastructure</name>
+    <name>Docker infrastructure</name>
 
     <packaging>pom</packaging>
 
