@@ -1,5 +1,0 @@
-server:
-  host: vdalen-discoveryservice
-
-eureka:
-  environment: Local

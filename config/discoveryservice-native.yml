@@ -1,0 +1,6 @@
+server:
+  host: localhost
+
+eureka:
+  environment: Local
+  datacenter: Lokaal

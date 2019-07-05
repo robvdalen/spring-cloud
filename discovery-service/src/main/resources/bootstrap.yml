@@ -12,6 +12,11 @@ spring:
         # Maximum number of attempts.
         maxAttempts: 30
 
+management:
+  endpoint:
+    refresh:
+      enabled: true
+
 eureka:
   name: Discovery Service
   datacenter: Cloud
@@ -36,10 +41,15 @@ logging:
     # Get info regarding connection to the config server and retries if required
     org.springframework.cloud.config.client.ConfigServicePropertySourceLocator: INFO
     org.springframework.cloud.config.client.ConfigServiceBootstrapConfiguration: INFO
+    org.springframework.retry.support.RetryTemplate: DEBUG
 
     # Set INFO to see the allocated port
     org.springframework.boot.web.embedded.tomcat.TomcatWebServer: INFO
     org.springframework.boot.web.embedded.undertow.UndertowWebServer: INFO
+
+    org.apache.http.impl.execchain.RetryExec: DEBUG
+
+    nl.vdalen.spring.cloud.discoveryservice: INFO
 
 ---
 # for local use
